@@ -18,4 +18,6 @@ asyn, areaDetector and more.
 
    getting-started
    usage
+   petalinux-integration
+   petalinux-integration-zh
 
