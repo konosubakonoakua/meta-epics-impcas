@@ -135,9 +135,11 @@ def generate_config_site(d, extra: dict = {}):
             fp.write(f'SHARED_LIBRARIES={"YES" if d.getVar("EPICS_ENABLE_SHARED_LIBS") == "1" else "NO"}\n')
             # For shared objects, we want to use $ORIGIN for the RPATH, so we don't end up with invalid temporary paths in the shared objects.
             fp.write('LINKER_USE_RPATH=ORIGIN\n')
-            # Enable host build when requested
-            if d.getVar('ENABLE_HOST_PACKAGE') == '1':
-                fp.write('HOST_BUILD=YES\n')
+            # EPICS defaults HOST_BUILD to YES, which would cause every
+            # cross-compiled module to also build for the build host (x86_64),
+            # needlessly pulling in host-side dependencies.  Only enable it
+            # when the recipe explicitly opts in via ENABLE_HOST_PACKAGE.
+            fp.write(f'HOST_BUILD={"YES" if d.getVar("ENABLE_HOST_PACKAGE") == "1" else "NO"}\n')
             # Force the list of target arches. Some packages may override this in their CONFIG_SITE
             fp.write(f'CROSS_COMPILER_TARGET_ARCHS={target_arch(d)}\n')
             # append extras
