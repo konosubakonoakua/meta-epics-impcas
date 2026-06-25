@@ -167,12 +167,14 @@ do_install() {
     install -d ${install_lib}
     cp -RP --preserve=mode,links -v ${S}/lib/linux-${TARGET_ARCH}/* ${install_lib}
 
-    # EPICS builds arch-independent Perl tools (makeBaseApp.pl, makeBaseExt.pl, etc.)
-    # under the BUILD_ARCH bin directory.  Copy them into the TARGET_ARCH bin so
-    # on-target IOC development works out of the box.
-    for src in ${S}/bin/linux-${BUILD_ARCH}/*.pl; do
-        [ -f "$src" ] || continue
-        install -m 0755 "$src" "${install_bin}/"
+    # EPICS builds arch-independent scripts (Perl *.pl, Python *.py) under the
+    # BUILD_ARCH bin directory.  Copy them into the TARGET_ARCH bin so on-target
+    # IOC development works out of the box.
+    for ext in pl py; do
+        for src in ${S}/bin/linux-${BUILD_ARCH}/*.$ext; do
+            [ -f "$src" ] || continue
+            install -m 0755 "$src" "${install_bin}/"
+        done
     done
 
     # Add the EPICS libraries to the LD_LIBRARY_PATH. Certain downstream packages need this (i.e. pyepics)
