@@ -187,6 +187,15 @@ do_install() {
         sed -i 's|^#!/bin/env |#!/usr/bin/env |' "$f"
     done
 
+    # Erase cross-compilation markers from the installed CONFIG_SITE.local so
+    # the target board can do self-hosted IOC compilation.  Without this,
+    # CROSS_COMPILER_TARGET_ARCHS=linux-arm tells EPICS that linux-arm is
+    # always a cross target, and HOST_BUILD=NO prevents native tool detection.
+    sed -i 's/^CROSS_COMPILER_TARGET_ARCHS=.*/CROSS_COMPILER_TARGET_ARCHS=/' \
+        "${install_dir}/configure/CONFIG_SITE.local"
+    sed -i '/^HOST_BUILD=NO/d' \
+        "${install_dir}/configure/CONFIG_SITE.local"
+
     # Remove all tempoary directories that came over as we copied
     find "${install_dir}" -type d -name "O.*" -exec rm -rf {} +
 }
