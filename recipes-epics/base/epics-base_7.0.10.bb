@@ -116,11 +116,19 @@ do_compile() {
 }
 
 do_compile:append:class-target() {
+    # Discover the actual ELF dynamic linker provided by the target's glibc.
+    # On ARM the toolchain may default to ld-linux.so.3 (soft-float) while the
+    # rootfs only ships ld-linux-armhf.so.3 (hard-float).  Inject the real path
+    # at link time so the resulting binaries can execute on the target.
+    REAL_LD=$(basename $(ls ${STAGING_DIR_HOST}${base_libdir}/ld-linux* 2>/dev/null | head -1))
+    LD_FLAG=""
+    [ -n "$REAL_LD" ] && LD_FLAG="-Wl,--dynamic-linker=${base_libdir}/$REAL_LD"
+
     # Extract flags from $CC/$CXX/$LD and put them into the USR_ variables
     make -j${BB_NUMBER_THREADS} \
         USR_CFLAGS="$(echo "${CC}" | cut -d ' ' -f 2-) ${CFLAGS}" \
         USR_CXXFLAGS="$(echo "${CXX}" | cut -d ' ' -f 2-) ${CXXFLAGS}" \
-        USR_LDFLAGS="$(echo "${LD}" | cut -d ' ' -f 2-) ${LDFLAGS}" \
+        USR_LDFLAGS="$LD_FLAG $(echo "${LD}" | cut -d ' ' -f 2-) ${LDFLAGS}" \
         install.linux-${TARGET_ARCH}
 }
 
