@@ -167,10 +167,26 @@ do_install() {
     install -d ${install_lib}
     cp -RP --preserve=mode,links -v ${S}/lib/linux-${TARGET_ARCH}/* ${install_lib}
 
+    # EPICS builds arch-independent Perl tools (makeBaseApp.pl, makeBaseExt.pl, etc.)
+    # under the BUILD_ARCH bin directory.  Copy them into the TARGET_ARCH bin so
+    # on-target IOC development works out of the box.
+    for src in ${S}/bin/linux-${BUILD_ARCH}/*.pl; do
+        [ -f "$src" ] || continue
+        install -m 0755 "$src" "${install_bin}/"
+    done
+
     # Add the EPICS libraries to the LD_LIBRARY_PATH. Certain downstream packages need this (i.e. pyepics)
     install -d "${D}${sysconfdir}/profile.d"
     echo "export LD_LIBRARY_PATH=/opt/epics/epics-base/lib/linux-${TARGET_ARCH}:\${LD_LIBRARY_PATH}" > "${D}${sysconfdir}/profile.d/epics.sh"
-    
+    echo "export PERL5LIB=/opt/epics/epics-base/lib/perl" >> "${D}${sysconfdir}/profile.d/epics.sh"
+
+    # Fix shebangs: EPICS Perl scripts may use "#!/bin/env perl" which breaks
+    # RPM packaging on usrmerge systems (/bin is a symlink to /usr/bin, so
+    # /bin/env is not a path any package directly provides as a dependency).
+    find "${D}" -type f -exec grep -l '^#!/bin/env' {} \; 2>/dev/null | while read f; do
+        sed -i 's|^#!/bin/env |#!/usr/bin/env |' "$f"
+    done
+
     # Remove all tempoary directories that came over as we copied
     find "${install_dir}" -type d -name "O.*" -exec rm -rf {} +
 }
