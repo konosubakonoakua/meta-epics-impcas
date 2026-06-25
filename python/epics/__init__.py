@@ -100,6 +100,14 @@ def generate_release_local(d, extra: dict = {}):
     print('Generated configure/RELEASE.local:')
     _cat_file('configure/RELEASE.local')
 
+    # Some EPICS modules (e.g. busy) have a configure/RELEASE that does not
+    # -include RELEASE.local, so our EPICS_BASE setting above would be ignored
+    # and make would fail with "No rule to make target 'build'".  Append the
+    # include line to the original RELEASE file unconditionally — it is harmless
+    # if the line already exists.
+    with open('configure/RELEASE', 'a') as fp:
+        fp.write('\n-include $(TOP)/configure/RELEASE.local\n')
+
 def generate_config_site(d, extra: dict = {}):
     """
     Generates a configure/CONFIG_SITE.local to get a module ready for build
