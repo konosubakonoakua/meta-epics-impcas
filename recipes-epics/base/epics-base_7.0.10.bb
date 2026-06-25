@@ -22,7 +22,7 @@ SRC_URI += " \
 DEPENDS += " readline"
 
 RDEPENDS:${PN} += " bash perl"
-RDEPENDS:${PN}:class-target += " epics-env"
+RDEPENDS:${PN}:class-target += " epics-env readline"
 
 S = "${WORKDIR}/git"
 
@@ -195,6 +195,13 @@ do_install() {
         "${install_dir}/configure/CONFIG_SITE.local"
     sed -i '/^HOST_BUILD=NO/d' \
         "${install_dir}/configure/CONFIG_SITE.local"
+
+    # libCom links against GNU readline (iocsh, epicsReadline).  On the
+    # target the shared libreadline is available but EPICS' static linking
+    # wrapper ignores it.  Inject a global USR_LDFLAGS guard so every
+    # self-hosted IOC automatically picks up -lreadline at link time.
+    echo 'USR_LDFLAGS += -Wl,-Bdynamic -lreadline -Wl,-Bstatic' \
+        >> "${install_dir}/configure/CONFIG_SITE.local"
 
     # Remove all tempoary directories that came over as we copied
     find "${install_dir}" -type d -name "O.*" -exec rm -rf {} +
