@@ -36,21 +36,6 @@ def target_arch(d) -> str:
     tgt_arch = d.getVar('TARGET_ARCH')
     return f'linux-{tgt_arch}'
 
-def module_install_dir(d) -> str:
-    """
-    Returns the install directory fragment under /opt/epics for a recipe.
-
-    Layout:
-      /opt/epics/base/           — epics-base
-      /opt/epics/support/<stem>/ — all other EPICS modules
-    """
-    pn = d.getVar('PN')
-    pn = pn.replace('-native', '').replace('-nativesdk', '')
-    if pn == 'epics-base':
-        return 'base'
-    stem = pn.replace('epics-', '').replace('slac-epics-', '')
-    return f'support/{stem}'
-
 def _dep_install_dir(pn: str) -> str:
     """Compute install directory fragment for a dependency recipe name."""
     pn = pn.replace('-native', '').replace('-nativesdk', '')
@@ -145,7 +130,7 @@ def generate_config_site(d, extra: dict = {}):
         Name -> value mapping
     """
     pfx = d.getVar('D')
-    mn = d.getVar('MODNAME')
+    install_dir = d.getVar('EPICS_INSTALL_DIR')
     root = d.getVar('RECIPE_SYSROOT')
     native_root = d.getVar('RECIPE_SYSROOT_NATIVE')
     harch = host_arch(d)
@@ -156,10 +141,10 @@ def generate_config_site(d, extra: dict = {}):
             fp.seek(0, io.SEEK_END)
             fp.write(f'EPICS_BASE_HOST_BIN={native_root}/opt/epics/base/bin/{harch}\n')
             # Tweak location of build products
-            fp.write(f'INSTALL_LOCATION={pfx}/opt/epics/{mn}\n')
-            fp.write(f'FINAL_LOCATION=/opt/epics/{mn}\n')
+            fp.write(f'INSTALL_LOCATION={pfx}{install_dir}\n')
+            fp.write(f'FINAL_LOCATION={install_dir}\n')
             # iocBoot/cpuBoot will be installed here too, but only run under the target.
-            fp.write(f'IOCS_APPL_TOP=/opt/epics/{mn}\n')
+            fp.write(f'IOCS_APPL_TOP={install_dir}\n')
             # Disable CHECK_RELEASE. Simply not compatile with Yocto due to the different sysroots used to compile
             # each package. Our EPICS_BASE location is never the same between packages.
             fp.write('CHECK_RELEASE=NO\n')

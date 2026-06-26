@@ -2,10 +2,14 @@
 # Defines common methods and rules for EPICS module recipes
 #
 
-# Default install fragment under /opt/epics:
-#   epics-base   → base
-#   epics-<stem> → support/<stem>
-MODNAME ?= "${@epics.module_install_dir(d)}"
+# Default module name is the package name
+MODNAME ?= "${PN}"
+
+# Absolute install directory on target.  Every recipe that needs a non-default
+# location must override this variable explicitly.
+#   epics-base               → /opt/epics/base
+#   epics-<stem> modules     → /opt/epics/support/<stem>  (default: /opt/epics/support/${PN})
+EPICS_INSTALL_DIR ?= "/opt/epics/support/${PN}"
 
 # Add your EPICS dependencies to this variable
 EPICS_DEPENDS = ""
@@ -60,25 +64,27 @@ do_compile:prepend() {
 do_install() {
     oe_runmake install
 
+    inst="${D}${EPICS_INSTALL_DIR}"
+
     # Copy iocBoot and cpuBoot directories
     for d in iocBoot cpuBoot; do
         if [ -d $d ]; then
-            cp -rfv $d "${D}/opt/epics/${MODNAME}/$d"
+            cp -rfv $d "${inst}/$d"
         fi
     done
 
     # Get streamDevice protocol files from typical directories
     if [ -d protocol ]; then
-        cp -rfv protocol "${D}/opt/epics/${MODNAME}/protocol"
+        cp -rfv protocol "${inst}/protocol"
     fi
 
     if [ -d app/srcProtocol ]; then
-        install -d "${D}/opt/epics/${MODNAME}/app"
-        cp -rfv app/srcProtocol "${D}/opt/epics/${MODNAME}/app/srcProtocol"
+        install -d "${inst}/app"
+        cp -rfv app/srcProtocol "${inst}/app/srcProtocol"
     fi
 
     # Sanitize TOOLCHAIN files. These contain absolute paths in comments
-    for d in $(find ${D}/opt/epics/${MODNAME} -name "TOOLCHAIN*"); do
+    for d in $(find "${inst}" -name "TOOLCHAIN*"); do
         sed -i "/^#/d" "${d}"
     done
 }
@@ -89,26 +95,26 @@ do_install:prepend() {
 }
 
 # Common directories to install for both native and target pkgs
-ALL_FILES += "/opt/epics/${MODNAME}/db"
-ALL_FILES += "/opt/epics/${MODNAME}/dbd"
-ALL_FILES += "/opt/epics/${MODNAME}/include"
-ALL_FILES += "/opt/epics/${MODNAME}/configure"
-ALL_FILES += "/opt/epics/${MODNAME}/cfg"
-ALL_FILES += "/opt/epics/${MODNAME}/templates"
-ALL_FILES += "/opt/epics/${MODNAME}/doc"
-ALL_FILES += "/opt/epics/${MODNAME}/html"
-ALL_FILES += "/opt/epics/${MODNAME}/iocBoot"
-ALL_FILES += "/opt/epics/${MODNAME}/cpuBoot"
-ALL_FILES += "/opt/epics/${MODNAME}/autosave"
-ALL_FILES += "/opt/epics/${MODNAME}/display"
-ALL_FILES += "/opt/epics/${MODNAME}/screens"
-ALL_FILES += "/opt/epics/${MODNAME}/archive"
-ALL_FILES += "/opt/epics/${MODNAME}/iocsh"
-ALL_FILES += "/opt/epics/${MODNAME}/src/tools"
-ALL_FILES += "/opt/epics/${MODNAME}/lib/perl"
-ALL_FILES += "/opt/epics/${MODNAME}/edl"
-ALL_FILES += "/opt/epics/${MODNAME}/protocol"
-ALL_FILES += "/opt/epics/${MODNAME}/app/srcProtocol"
+ALL_FILES += "${EPICS_INSTALL_DIR}/db"
+ALL_FILES += "${EPICS_INSTALL_DIR}/dbd"
+ALL_FILES += "${EPICS_INSTALL_DIR}/include"
+ALL_FILES += "${EPICS_INSTALL_DIR}/configure"
+ALL_FILES += "${EPICS_INSTALL_DIR}/cfg"
+ALL_FILES += "${EPICS_INSTALL_DIR}/templates"
+ALL_FILES += "${EPICS_INSTALL_DIR}/doc"
+ALL_FILES += "${EPICS_INSTALL_DIR}/html"
+ALL_FILES += "${EPICS_INSTALL_DIR}/iocBoot"
+ALL_FILES += "${EPICS_INSTALL_DIR}/cpuBoot"
+ALL_FILES += "${EPICS_INSTALL_DIR}/autosave"
+ALL_FILES += "${EPICS_INSTALL_DIR}/display"
+ALL_FILES += "${EPICS_INSTALL_DIR}/screens"
+ALL_FILES += "${EPICS_INSTALL_DIR}/archive"
+ALL_FILES += "${EPICS_INSTALL_DIR}/iocsh"
+ALL_FILES += "${EPICS_INSTALL_DIR}/src/tools"
+ALL_FILES += "${EPICS_INSTALL_DIR}/lib/perl"
+ALL_FILES += "${EPICS_INSTALL_DIR}/edl"
+ALL_FILES += "${EPICS_INSTALL_DIR}/protocol"
+ALL_FILES += "${EPICS_INSTALL_DIR}/app/srcProtocol"
 
 
 # Build a package for the build host
@@ -116,16 +122,16 @@ PACKAGES += "${PN}-native"
 
 # Build a package for the target system
 FILES:${PN}:append:class-target = " ${ALL_FILES}"
-FILES:${PN}:append:class-target = " /opt/epics/${MODNAME}/bin/linux-${TARGET_ARCH}"
-FILES:${PN}:append:class-target = " /opt/epics/${MODNAME}/lib/linux-${TARGET_ARCH}"
+FILES:${PN}:append:class-target = " ${EPICS_INSTALL_DIR}/bin/linux-${TARGET_ARCH}"
+FILES:${PN}:append:class-target = " ${EPICS_INSTALL_DIR}/lib/linux-${TARGET_ARCH}"
 
-FILES:${PN}:append:class-native = " /opt/epics/${MODNAME}/bin/linux-${BUILD_ARCH}"
-FILES:${PN}:append:class-native = " /opt/epics/${MODNAME}/lib/linux-${BUILD_ARCH}"
+FILES:${PN}:append:class-native = " ${EPICS_INSTALL_DIR}/bin/linux-${BUILD_ARCH}"
+FILES:${PN}:append:class-native = " ${EPICS_INSTALL_DIR}/lib/linux-${BUILD_ARCH}"
 
 # Expose this package in the sysroot
-SYSROOT_DIRS:append:class-target = " /opt/epics/${MODNAME}/bin/linux-${TARGET_ARCH}"
-SYSROOT_DIRS:append:class-target = " /opt/epics/${MODNAME}/lib/linux-${TARGET_ARCH}"
+SYSROOT_DIRS:append:class-target = " ${EPICS_INSTALL_DIR}/bin/linux-${TARGET_ARCH}"
+SYSROOT_DIRS:append:class-target = " ${EPICS_INSTALL_DIR}/lib/linux-${TARGET_ARCH}"
 SYSROOT_DIRS:append:class-target = " ${ALL_FILES}"
 
-SYSROOT_DIRS_NATIVE:append = " ${STAGING_DIR_NATIVE}/opt/epics/${MODNAME}/bin/linux-${BUILD_ARCH}"
-SYSROOT_DIRS_NATIVE:append = " ${STAGING_DIR_NATIVE}/opt/epics/${MODNAME}/lib/linux-${BUILD_ARCH}"
+SYSROOT_DIRS_NATIVE:append = " ${STAGING_DIR_NATIVE}${EPICS_INSTALL_DIR}/bin/linux-${BUILD_ARCH}"
+SYSROOT_DIRS_NATIVE:append = " ${STAGING_DIR_NATIVE}${EPICS_INSTALL_DIR}/lib/linux-${BUILD_ARCH}"

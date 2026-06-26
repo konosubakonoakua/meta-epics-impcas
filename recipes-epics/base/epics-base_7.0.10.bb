@@ -9,8 +9,10 @@ LICENSE_PATH += "${S}"
 
 BBCLASSEXTEND = "native nativesdk"
 
-# Force install fragment to "base" regardless of PN
-MODNAME = "base"
+# Install directly under /opt/epics/base
+EPICS_INSTALL_DIR = "/opt/epics/base"
+# Keep MODNAME for the -native package naming; SYSROOT_DIRS_NATIVE below uses it
+MODNAME = "epics-base"
 
 SRCREV = "bf11a0c31c919ba85ba2e23b72bcf0b5f9f62e77"
 SRC_URI = "gitsm://github.com/epics-base/epics-base;protocol=https;branch=7.0;rev=${SRCREV}"
@@ -30,7 +32,7 @@ S = "${WORKDIR}/git"
 EPICS_ENABLE_SHARED_LIBS = "1"
 
 do_configure() {
-    install -d "${D}/opt/epics/${MODNAME}"
+    install -d "${D}${EPICS_INSTALL_DIR}"
 
     #############################################################
     # configure/CONFIG_SITE.local
@@ -56,7 +58,7 @@ do_configure() {
     echo 'LINKER_USE_RPATH=ORIGIN' >> "${F}"
 
     # Point at /opt/epics; better to do this here to avoid bad file paths
-    echo "FINAL_LOCATION=/opt/epics/${MODNAME}" >> "${F}"
+    echo "FINAL_LOCATION=${EPICS_INSTALL_DIR}" >> "${F}"
 
     # Build only for target architecture(s), not for the build host
     echo "HOST_BUILD=NO" >> "${F}"
@@ -132,7 +134,7 @@ do_compile:append:class-target() {
 }
 
 do_install() {
-    install_dir="${D}/opt/epics/${MODNAME}"
+    install_dir="${D}${EPICS_INSTALL_DIR}"
 
     # Install built or otherwise useful EPICS files
     # Arch specific files are handled in do_install:append functions below
@@ -158,11 +160,11 @@ do_install() {
     done
 
     # Regardless of target or native build, the TARGET_ARCH is correct
-    install_bin="${D}/opt/epics/${MODNAME}/bin/linux-${TARGET_ARCH}"
+    install_bin="${D}${EPICS_INSTALL_DIR}/bin/linux-${TARGET_ARCH}"
     install -d ${install_bin}
     cp -RP --preserve=mode,links -v ${S}/bin/linux-${TARGET_ARCH}/* ${install_bin}
 
-    install_lib="${D}/opt/epics/${MODNAME}/lib/linux-${TARGET_ARCH}"
+    install_lib="${D}${EPICS_INSTALL_DIR}/lib/linux-${TARGET_ARCH}"
     install -d ${install_lib}
     cp -RP --preserve=mode,links -v ${S}/lib/linux-${TARGET_ARCH}/* ${install_lib}
 
@@ -209,11 +211,11 @@ do_install() {
 }
 
 do_install:append:class-native() {
-    native_bin="${D}${STAGING_DIR_NATIVE}/opt/epics/${MODNAME}/bin/linux-${BUILD_ARCH}"
+    native_bin="${D}${STAGING_DIR_NATIVE}${EPICS_INSTALL_DIR}/bin/linux-${BUILD_ARCH}"
     install -d ${native_bin}
     cp -RP --preserve=mode,links -v ${S}/bin/linux-${BUILD_ARCH}/* ${native_bin}
 
-    native_lib="${D}${STAGING_DIR_NATIVE}/opt/epics/${MODNAME}/lib/linux-${BUILD_ARCH}"
+    native_lib="${D}${STAGING_DIR_NATIVE}${EPICS_INSTALL_DIR}/lib/linux-${BUILD_ARCH}"
     install -d ${native_lib}
     cp -RP --preserve=mode,links -v ${S}/lib/linux-${BUILD_ARCH}/* ${native_lib}
 }
@@ -223,17 +225,17 @@ do_install:append:class-target() {
     mkdir -p "${D}/usr/local/bin"
     for prog in caput caget cainfo camonitor catime caRepeater pvcall pvget pvinfo pvlist pvmonitor pvput
     do
-        ln -s /opt/epics/${MODNAME}/bin/linux-${TARGET_ARCH}/$prog "${D}/usr/local/bin/$prog"
+        ln -s ${EPICS_INSTALL_DIR}/bin/linux-${TARGET_ARCH}/$prog "${D}/usr/local/bin/$prog"
     done
 
     # Sanitize TOOLCHAIN files. These contain absolute paths in comments
-    for d in $(find ${D}/opt/epics/${MODNAME} -name "TOOLCHAIN*"); do
+    for d in $(find ${D}${EPICS_INSTALL_DIR} -name "TOOLCHAIN*"); do
         sed -i "/^#/d" "${d}"
     done
 
     # Install the generated caRepeater.service
     mkdir -p "${D}/etc/systemd/system/multi-user.target.wants"
-    cp "${D}/opt/epics/${MODNAME}/bin/linux-${TARGET_ARCH}/caRepeater.service" "${D}/etc/systemd/system/caRepeater.service"
+    cp "${D}${EPICS_INSTALL_DIR}/bin/linux-${TARGET_ARCH}/caRepeater.service" "${D}/etc/systemd/system/caRepeater.service"
     chmod 644 "${D}/etc/systemd/system/caRepeater.service"
     ln -s "/etc/systemd/system/caRepeater.service" "${D}/etc/systemd/system/multi-user.target.wants/caRepeater.service"
 }
