@@ -2,6 +2,8 @@
 
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/iocstats"
+
 SUMMARY = "iocSats recipe"
 DESCRIPTION = "Recipe for building EPICS iocStats for the EPICS control system."
 

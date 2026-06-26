@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/drvasyni2c"
+
 SUMMARY = "drvAsynI2C recipe"
 DESCRIPTION = "Recipe for building drvAsynI2C for the EPICS control system."
 

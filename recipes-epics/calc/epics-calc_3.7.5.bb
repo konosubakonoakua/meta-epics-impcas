@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/calc"
+
 SUMMARY = "Calc recipe"
 DESCRIPTION = "Recipe for building Calc for the EPICS control system."
 

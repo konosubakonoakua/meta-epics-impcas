@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/sscan"
+
 SUMMARY = "SScan recipe"
 DESCRIPTION = "Recipe for building SScan for the EPICS control system."
 

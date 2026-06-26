@@ -2,6 +2,8 @@
 
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/areadetector"
+
 SUMMARY = "areaDetector recipe"
 DESCRIPTION = "Recipe for building the areaDetector superpackage for the EPICS control system."
 

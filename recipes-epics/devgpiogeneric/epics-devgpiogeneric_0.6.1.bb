@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/devgpiogeneric"
+
 SUMMARY = "devGpioGeneric recipe"
 DESCRIPTION = "Recipe for building devGpioGeneric for the EPICS control system."
 

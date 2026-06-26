@@ -1,4 +1,6 @@
-inherit epics-module epics-functions
+inherit epics-module
+
+EPICS_INSTALL_DIR = "/opt/epics/support/adstream"
 
 SUMMARY = "SLAC EPICS ADStream recipe"
 DESCRIPTION = "Recipe for building the ADStream areaDetector module from SLAC, for the EPICS control system."

@@ -1,4 +1,6 @@
-inherit epics-module epics-functions
+inherit epics-module
+
+EPICS_INSTALL_DIR = "/opt/epics/support/adaravis"
 
 SUMMARY = "EPICS ADAravis recipe"
 DESCRIPTION = "Recipe for building the ADAravis areaDetector module for the EPICS control system."

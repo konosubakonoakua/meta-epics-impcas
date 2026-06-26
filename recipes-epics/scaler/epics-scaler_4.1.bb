@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/scaler"
+
 SUMMARY = "EPICS scaler recipe"
 DESCRIPTION = "Recipe for building the scaler module for the EPICS control system."
 

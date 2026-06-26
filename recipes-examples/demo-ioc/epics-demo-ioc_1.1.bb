@@ -1,5 +1,7 @@
 inherit epics-ioc-systemd
 
+EPICS_INSTALL_DIR = "/opt/epics/support/demo-ioc"
+
 SUMMARY = "EPICS Demo IOC recipe"
 DESCRIPTION = "Recipe for building a simple demo IOC for EPICS"
 

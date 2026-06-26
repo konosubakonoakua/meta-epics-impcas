@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/autosave"
+
 SUMMARY = "Autosave recipe"
 DESCRIPTION = "Recipe for building EPICS base for the EPICS control system."
 

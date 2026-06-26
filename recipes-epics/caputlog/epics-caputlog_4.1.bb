@@ -2,6 +2,8 @@
 
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/caputlog"
+
 SUMMARY = "caPutLog recipe"
 DESCRIPTION = "Recipe for building EPICS caPutLog for the EPICS control system."
 

@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/asyn"
+
 SUMMARY = "EPICS Asyn module recipe"
 DESCRIPTION = "Recipe for building the Asyn module for the EPICS control system, with support for VXI-11, GPIB, and other industrial communication protocols."
 

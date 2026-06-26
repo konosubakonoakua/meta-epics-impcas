@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/history"
+
 SUMMARY = "History recipe"
 DESCRIPTION = "Recipe for building SLAC's history for the EPICS control system."
 

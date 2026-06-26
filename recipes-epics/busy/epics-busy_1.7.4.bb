@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/busy"
+
 SUMMARY = "Busy recipe"
 DESCRIPTION = "Recipe for building busy for the EPICS control system."
 

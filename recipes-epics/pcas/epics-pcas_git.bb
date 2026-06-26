@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/pcas"
+
 SUMMARY = "EPICS Portable Channel Access Server (pcas) recipe"
 DESCRIPTION = "Recipe for building the standalone Portable Channel Access Server module for the EPICS control system. Provides a C++ library for creating EPICS Channel Access servers."
 

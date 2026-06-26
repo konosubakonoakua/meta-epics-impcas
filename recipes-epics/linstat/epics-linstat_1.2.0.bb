@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/linstat"
+
 SUMMARY = "EPICS linStat recipe"
 DESCRIPTION = "Recipe for building the linStat module for the EPICS control system."
 

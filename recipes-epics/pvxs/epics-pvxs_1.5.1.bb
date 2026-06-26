@@ -2,6 +2,8 @@
 
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/pvxs"
+
 SUMMARY = "pvxs recipe"
 DESCRIPTION = "Recipe for building EPICS pvxs for the EPICS control system."
 

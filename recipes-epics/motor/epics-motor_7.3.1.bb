@@ -2,6 +2,8 @@
 
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/motor"
+
 SUMMARY = "EPICS motor  recipe"
 DESCRIPTION = "Recipe for building EPICS motor module for the EPICS control system."
 

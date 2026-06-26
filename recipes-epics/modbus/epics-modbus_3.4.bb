@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/modbus"
+
 SUMMARY = "EPICS modbus recipe"
 DESCRIPTION = "Recipe for building the modbus module for the EPICS control system."
 

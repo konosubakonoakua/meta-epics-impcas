@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/mcoreutils"
+
 SUMMARY = "MCoreUtils recipe"
 DESCRIPTION = "Recipe for building MCoreUtils for the EPICS control system."
 

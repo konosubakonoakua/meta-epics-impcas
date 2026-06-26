@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/streamdevice"
+
 SUMMARY = "StreamDevice recipe"
 DESCRIPTION = "Recipe for building StreamDevice for the EPICS control system."
 

@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/asyndribble"
+
 SUMMARY = "asynDribble recipe"
 DESCRIPTION = "Recipe for building asynDribble for the EPICS control system."
 

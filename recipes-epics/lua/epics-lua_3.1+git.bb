@@ -1,5 +1,7 @@
 inherit epics-module
 
+EPICS_INSTALL_DIR = "/opt/epics/support/lua"
+
 SUMMARY = "EPICS Lua recipe"
 DESCRIPTION = "Recipe for building the Lua module for the EPICS control system."
 
