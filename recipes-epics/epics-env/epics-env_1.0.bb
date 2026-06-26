@@ -92,8 +92,8 @@ python do_install() {
     with open(f"{D}{SC}/profile.d/epics-env.sh", "w") as fp:
         # These cannot be overridden
         fp.write(f"export EPICS_HOST_ARCH=linux-{d.getVar('TARGET_ARCH')}\n")
-        fp.write(f"export EPICS_BASE=/opt/epics/epics-base\n")
-        fp.write(f"export EPICS_MODULES=/opt/epics\n")
+        fp.write(f"export EPICS_BASE=/opt/epics/base\n")
+        fp.write(f"export EPICS_MODULES=/opt/epics/support\n")
         fp.write(f"export EPICS_SITE_TOP=/opt/epics\n")
 
         for v in vars:

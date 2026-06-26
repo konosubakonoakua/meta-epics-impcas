@@ -24,7 +24,7 @@ To install the EPICS base tools (caget, caput, etc.) into your image, add the fo
 
 
 The resulting image should now have the EPICS base tools installed to /usr/local/bin and available in your $PATH.
-The EPICS base files are located at /opt/epics/epics-base.
+The EPICS base files are located at /opt/epics/base.
 
 Running a Demo IOC
 ==================
@@ -48,11 +48,11 @@ After rebuilding your image and uploading it to the target, you should be able t
    @@@ procServ server PID: 548
    @@@ Server startup directory: /
    @@@ Child startup directory: /
-   @@@ Child started as: /opt/epics/epics-demo-ioc/ioc-start.sh
+   @@@ Child started as: /opt/epics/support/demo-ioc/ioc-start.sh
    @@@ Child log file: -
-   @@@ Child "/opt/epics/epics-demo-ioc/ioc-start.sh" PID: 579
+   @@@ Child "/opt/epics/support/demo-ioc/ioc-start.sh" PID: 579
    @@@ procServ server started at: Wed Jan  8 18:23:03 2025
-   @@@ Child "/opt/epics/epics-demo-ioc/ioc-start.sh" started at: Wed Jan  8 18:23:04 2025
+   @@@ Child "/opt/epics/support/demo-ioc/ioc-start.sh" started at: Wed Jan  8 18:23:04 2025
    @@@ 0 user(s) and 0 logger(s) connected (plus you)
 
    Entering character mode

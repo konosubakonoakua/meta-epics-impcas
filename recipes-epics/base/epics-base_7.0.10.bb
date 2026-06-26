@@ -9,8 +9,8 @@ LICENSE_PATH += "${S}"
 
 BBCLASSEXTEND = "native nativesdk"
 
-# Force MODNAME to epics-base for both native and target recipe
-MODNAME = "epics-base"
+# Force install fragment to "base" regardless of PN
+MODNAME = "base"
 
 SRCREV = "bf11a0c31c919ba85ba2e23b72bcf0b5f9f62e77"
 SRC_URI = "gitsm://github.com/epics-base/epics-base;protocol=https;branch=7.0;rev=${SRCREV}"
@@ -30,7 +30,7 @@ S = "${WORKDIR}/git"
 EPICS_ENABLE_SHARED_LIBS = "1"
 
 do_configure() {
-    install -d "${D}/opt/epics/${PN}"
+    install -d "${D}/opt/epics/${MODNAME}"
 
     #############################################################
     # configure/CONFIG_SITE.local
@@ -56,8 +56,7 @@ do_configure() {
     echo 'LINKER_USE_RPATH=ORIGIN' >> "${F}"
 
     # Point at /opt/epics; better to do this here to avoid bad file paths
-    #TODO: fp.write(f'INSTALL_LOCATION={install_dir}\n')
-    echo "FINAL_LOCATION=/opt/epics/${PN}" >> "${F}"
+    echo "FINAL_LOCATION=/opt/epics/${MODNAME}" >> "${F}"
 
     # Build only for target architecture(s), not for the build host
     echo "HOST_BUILD=NO" >> "${F}"
@@ -179,8 +178,8 @@ do_install() {
 
     # Add the EPICS libraries to the LD_LIBRARY_PATH. Certain downstream packages need this (i.e. pyepics)
     install -d "${D}${sysconfdir}/profile.d"
-    echo "export LD_LIBRARY_PATH=/opt/epics/epics-base/lib/linux-${TARGET_ARCH}:\${LD_LIBRARY_PATH}" > "${D}${sysconfdir}/profile.d/epics.sh"
-    echo "export PERL5LIB=/opt/epics/epics-base/lib/perl" >> "${D}${sysconfdir}/profile.d/epics.sh"
+    echo "export LD_LIBRARY_PATH=/opt/epics/base/lib/linux-${TARGET_ARCH}:\${LD_LIBRARY_PATH}" > "${D}${sysconfdir}/profile.d/epics.sh"
+    echo "export PERL5LIB=/opt/epics/base/lib/perl" >> "${D}${sysconfdir}/profile.d/epics.sh"
 
     # Fix shebangs: EPICS Perl scripts may use "#!/bin/env perl" which breaks
     # RPM packaging on usrmerge systems (/bin is a symlink to /usr/bin, so

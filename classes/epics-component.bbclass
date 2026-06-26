@@ -2,8 +2,10 @@
 # Defines common methods and rules for EPICS module recipes
 #
 
-# Default module name is the package name
-MODNAME ?= "${PN}"
+# Default install fragment under /opt/epics:
+#   epics-base   → base
+#   epics-<stem> → support/<stem>
+MODNAME ?= "${@epics.module_install_dir(d)}"
 
 # Add your EPICS dependencies to this variable
 EPICS_DEPENDS = ""
@@ -52,7 +54,7 @@ do_compile() {
 # are necessary for both host and target builds, which are packaged with the
 # target, to be available to the host build as well.
 do_compile:prepend() {
-    export PERL5LIB="${RECIPE_SYSROOT}/opt/epics/epics-base/lib/perl"
+    export PERL5LIB="${RECIPE_SYSROOT}/opt/epics/base/lib/perl"
 }
 
 do_install() {
@@ -83,7 +85,7 @@ do_install() {
 
 # See comment above; need to do this before tasks with compilation
 do_install:prepend() {
-    export PERL5LIB="${RECIPE_SYSROOT}/opt/epics/epics-base/lib/perl"
+    export PERL5LIB="${RECIPE_SYSROOT}/opt/epics/base/lib/perl"
 }
 
 # Common directories to install for both native and target pkgs

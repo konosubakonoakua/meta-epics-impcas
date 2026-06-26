@@ -32,7 +32,7 @@ do_install:append() {
 
     # Point pyepics at our libca. For some reason it doesn't do this lookup in $LD_LIBRARY_PATH
     install -d "${D}${sysconfdir}/profile.d"
-    echo "export PYEPICS_LIBCA=\"/opt/epics/epics-base/lib/linux-${TARGET_ARCH}/libca.so\"" > "${D}${sysconfdir}/profile.d/pyepics.sh"
+    echo "export PYEPICS_LIBCA=\"/opt/epics/base/lib/linux-${TARGET_ARCH}/libca.so\"" > "${D}${sysconfdir}/profile.d/pyepics.sh"
 }
 
 FILES:${PN} += "${sysconfdir}/profile.d"

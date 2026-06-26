@@ -36,6 +36,29 @@ def target_arch(d) -> str:
     tgt_arch = d.getVar('TARGET_ARCH')
     return f'linux-{tgt_arch}'
 
+def module_install_dir(d) -> str:
+    """
+    Returns the install directory fragment under /opt/epics for a recipe.
+
+    Layout:
+      /opt/epics/base/           — epics-base
+      /opt/epics/support/<stem>/ — all other EPICS modules
+    """
+    pn = d.getVar('PN')
+    pn = pn.replace('-native', '').replace('-nativesdk', '')
+    if pn == 'epics-base':
+        return 'base'
+    stem = pn.replace('epics-', '').replace('slac-epics-', '')
+    return f'support/{stem}'
+
+def _dep_install_dir(pn: str) -> str:
+    """Compute install directory fragment for a dependency recipe name."""
+    pn = pn.replace('-native', '').replace('-nativesdk', '')
+    if pn == 'epics-base':
+        return 'base'
+    stem = pn.replace('epics-', '').replace('slac-epics-', '')
+    return f'support/{stem}'
+
 def get_extra_compiler_flags(d) -> list[str]:
     """
     Returns additional compiler flags for GCC. Must be passed to
@@ -52,7 +75,7 @@ def get_depends(d) -> dict:
     """
     r = {}
     # Some EPICS dependencies have names that do not conform to the standard;
-    # for example the sequencer module is often listed as SNCSEQ in RELEASE. 
+    # for example the sequencer module is often listed as SNCSEQ in RELEASE.
     # Here we keep a dictionary of non-standard dependencies and their corrected
     # RELEASE variable.
     alt_release = {
@@ -65,14 +88,14 @@ def get_depends(d) -> dict:
     for dep in deps.split(' '):
         if len(dep) == 0: continue
         if dep in alt_release.keys(): dep = alt_release[dep]
-        r[dep] = f'{pfx}/opt/epics/{dep}'
+        r[dep] = f'{pfx}/opt/epics/{_dep_install_dir(dep)}'
     return r
 
 def generate_release_local(d, extra: dict = {}):
     """
     Generates a configure/RELEASE.local to get a module ready for build
     Reads the DEPENDS variable to determine which EPICS packages we depend on
-    
+
     Parameters
     ----------
     d : Any
@@ -85,7 +108,7 @@ def generate_release_local(d, extra: dict = {}):
     os.makedirs('configure', exist_ok=True)
     with open('configure/RELEASE.local', 'w') as fp:
         fp.seek(0, io.SEEK_END) # Ensure we append, in case important content exists
-        fp.write(f'EPICS_BASE={root}/opt/epics/epics-base\n')
+        fp.write(f'EPICS_BASE={root}/opt/epics/base\n')
         # Write out modules and their associated paths
         deps = get_depends(d)
         for mn, mv in deps.items():
@@ -112,7 +135,7 @@ def generate_config_site(d, extra: dict = {}):
     """
     Generates a configure/CONFIG_SITE.local to get a module ready for build
     Configures the install location to point at /opt/ somewhere
-    
+
     Parameters
     ----------
     d : Any
@@ -131,7 +154,7 @@ def generate_config_site(d, extra: dict = {}):
     for fn in ['CONFIG_SITE.local', f'CONFIG_SITE.{host_arch(d)}.Common']:
         with open(f'configure/{fn}', 'w') as fp:
             fp.seek(0, io.SEEK_END)
-            fp.write(f'EPICS_BASE_HOST_BIN={native_root}/opt/epics/epics-base/bin/{harch}\n')
+            fp.write(f'EPICS_BASE_HOST_BIN={native_root}/opt/epics/base/bin/{harch}\n')
             # Tweak location of build products
             fp.write(f'INSTALL_LOCATION={pfx}/opt/epics/{mn}\n')
             fp.write(f'FINAL_LOCATION=/opt/epics/{mn}\n')
@@ -180,4 +203,3 @@ def generate_config_site(d, extra: dict = {}):
 
     print(f'Generated {target_cfg_site}:')
     _cat_file(target_cfg_site)
-

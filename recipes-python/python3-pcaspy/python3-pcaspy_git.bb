@@ -33,15 +33,15 @@ RDEPENDS:${PN} += "\
 # Point pcaspy's build at the PCAS module in the recipe sysroot.
 # pcaspy setup.py checks the PCAS env var; without it, it falls back to
 # <EPICS_BASE>/modules/pcas (which won't exist in our standalone layout).
-export PCAS = "${RECIPE_SYSROOT}/opt/epics/epics-pcas"
+export PCAS = "${RECIPE_SYSROOT}/opt/epics/support/pcas"
 
 # Also ensure EPICS base headers and libs are visible.
-export EPICS_BASE = "${RECIPE_SYSROOT}/opt/epics/epics-base"
+export EPICS_BASE = "${RECIPE_SYSROOT}/opt/epics/base"
 
 do_compile:prepend() {
     # pcaspy's setup.py may shell out to EPICS build tools — expose the
     # native epics-base host-bin directory on PATH.
-    export PATH="${RECIPE_SYSROOT_NATIVE}/opt/epics/epics-base/bin/linux-${BUILD_ARCH}:${PATH}"
+    export PATH="${RECIPE_SYSROOT_NATIVE}/opt/epics/base/bin/linux-${BUILD_ARCH}:${PATH}"
 }
 
 do_install:append() {
@@ -49,7 +49,7 @@ do_install:append() {
     # library at runtime on the target.
     install -d "${D}${sysconfdir}/profile.d"
     cat > "${D}${sysconfdir}/profile.d/pcaspy.sh" <<EOF
-export LD_LIBRARY_PATH=/opt/epics/epics-pcas/lib/linux-\${EPICS_HOST_ARCH}:/opt/epics/epics-base/lib/linux-\${EPICS_HOST_ARCH}:\${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=/opt/epics/support/pcas/lib/linux-\${EPICS_HOST_ARCH}:/opt/epics/base/lib/linux-\${EPICS_HOST_ARCH}:\${LD_LIBRARY_PATH}
 EOF
 }
 
