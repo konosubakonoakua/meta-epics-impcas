@@ -51,7 +51,7 @@ install_systemd_unit() {
     else
         echo "${EPICS_INSTALL_DIR}/bin/linux-${TARGET_ARCH}/${IOC_APP_NAME} ${IOC_ST_CMD}" >> ${SHS}
     fi
-    
+
     # Make sure it's executable...
     chmod +x "${D}${EPICS_INSTALL_DIR}/ioc-start.sh"
 
@@ -66,9 +66,9 @@ install_systemd_unit() {
     echo "RestartSec=5s" >> ${U}
     echo "[Install]" >> ${U}
     echo "WantedBy=multi-user.target" >> ${U}
-    
+
     chmod 644 ${U}
-    
+
     # Force the unit to start on boot
     mkdir -p ${D}/etc/systemd/system/multi-user.target.wants
     ln -s "/etc/systemd/system/${PN}.service" "${D}/etc/systemd/system/multi-user.target.wants/${PN}.service"
@@ -78,4 +78,4 @@ do_install[postfuncs] += "update_env_paths install_systemd_unit"
 
 FILES:${PN} += "${EPICS_INSTALL_DIR}/ioc-start.sh"
 FILES:${PN} += "/etc/systemd/system/${PN}.service"
-FILES:${PN} += "/etc/systemd/system/multi-user.target.wants/${PN}.service"
+# FILES:${PN} += "/etc/systemd/system/multi-user.target.wants/${PN}.service"
