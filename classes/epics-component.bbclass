@@ -66,6 +66,9 @@ do_install() {
 
     inst="${D}${EPICS_INSTALL_DIR}"
 
+    # Copy top level Makefile to build on target if necessary
+    install -m 0644 ${S}/Makefile "${D}/opt/epics/${MODNAME}"
+
     # Copy iocBoot and cpuBoot directories
     for d in iocBoot cpuBoot; do
         if [ -d $d ]; then
@@ -95,6 +98,7 @@ do_install:prepend() {
 }
 
 # Common directories to install for both native and target pkgs
+ALL_FILES += "${EPICS_INSTALL_DIR}/Makefile"
 ALL_FILES += "${EPICS_INSTALL_DIR}/db"
 ALL_FILES += "${EPICS_INSTALL_DIR}/dbd"
 ALL_FILES += "${EPICS_INSTALL_DIR}/include"
